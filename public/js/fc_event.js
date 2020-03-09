@@ -1,4 +1,3 @@
-
 /**
  * Remove the event from the calendar.
  *

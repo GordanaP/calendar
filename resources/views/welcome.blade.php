@@ -66,28 +66,27 @@
                         hour12: false
                     }
                 ],
-                dayRender: function(info) {
-                    highlightHolidays(info);
-                    highlightDoctorAbsences(info, doctorAbsences);
+                dayRender: function(renderInfo) {
+                    highlightHolidays(renderInfo);
+                    highlightDoctorAbsences(renderInfo, doctorAbsences);
                 },
                 selectable: true,
-                selectAllow: function(info) {
-                    var date = info.start;
-                    return isSelectable(date, doctorAbsences);
+                selectAllow: function(selectInfo) {
+                    return isSelectable(selectInfo.start, doctorAbsences);
                 },
                 selectConstraint: 'businessHours',
-                select: function(info) {
-                    // open the scheduling modal
+                select: function(selectInfo) {
+                    // open the schedule appointment modal
                 },
                 events:  {
                     url: doctorAppListUrl,
                 },
-                eventSourceSuccess: function(content, xhr) {
-                    return content.data;
+                eventSourceSuccess: function(response, xhr) {
+                    return response.data;
                 },
-                eventRender: function(info) {
-                  $(info.el).tooltip({
-                    title: info.event.extendedProps.description,
+                eventRender: function(renderInfo) {
+                  $(renderInfo.el).tooltip({
+                    title: renderInfo.event.extendedProps.description,
                     placement: "top",
                     trigger: "hover",
                     container: "body"
@@ -100,11 +99,15 @@
                     hour12: false
                 },
                 eventLimit: eventLimit,
-                eventClick: function(info) {
-                    console.log(info)
+                eventClick: function(clickInfo) {
+                    // open the update appointment modal
                 },
-                eventDrop:function(info) {
-                    console.log(info)
+                eventDrop:function(dropInfo) {
+                    //
+                },
+                eventOverlap: false,
+                eventAllow: function(dropInfo, draggedEvent) {
+                    return isSelectable(dropInfo.start, doctorAbsences)
                 },
                 views: {
                     timeGrid: {

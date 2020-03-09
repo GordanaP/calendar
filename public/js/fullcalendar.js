@@ -32,12 +32,10 @@ function formatDateObj(dateObj, format)
  */
 function isSelectable(date, doctorAbsences)
 {
-    return  isNotPast(date) &&
-            isNotHoliday(date) &&
-            isNotSunday(date) &&
-            isNotDoctorAbsenceDate(date, doctorAbsences);
+    return  ! isPast(date) &&
+            ! isHoliday(date) &&
+            ! isDoctorAbsenceDate(date, doctorAbsences);
 }
-
 
 /**
  * Determine if the given date is Sunday.
@@ -51,34 +49,16 @@ function isSunday(date)
 }
 
 /**
- * Determine if the given date is not the weekend day.
+ * Determine if the given time is in the past.
  *
- * @param  Javascript\Date  date
+ * @param  mixed  dateTime
  * @return boolean
  */
-function isNotWeekend(date)
+function isPast(dateTime)
 {
-    return date.getDay() !== 6 && date.getDay() !== 0;
+    var d1 = moment(dateTime);
+    var d2 = moment();
+
+    return d2.diff(d1, 'minutes') > 0;
 }
 
-/**
- * Determine if the given date is not Sunday.
- *
- * @param  Javascript\Date  date
- * @return boolean
- */
-function isNotSunday(date)
-{
-    return date.getDay() !== 0;
-}
-
-/**
- * Determine if the given date is not in the past.
- *
- * @param  mixed  date
- * @return boolean
- */
-function isNotPast(date)
-{
-    return moment(date).isAfter(moment());
-}

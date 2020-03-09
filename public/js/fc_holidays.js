@@ -25,17 +25,17 @@ function highlightHolidays(fcDay, className="holiday")
 }
 
 /**
- * Determine if the given date is not holiday.
+ * Determine if the given date is holiday.
  *
  * @param  Javascript\Date  date
  * @return boolean
  */
-function isNotHoliday(date)
+function isHoliday(date)
 {
     var year = date.getFullYear();
     var formattedDate = formatDateObj(date, 'YYYY-MM-DD');
 
-    return ! holidayDates(year).includes(formattedDate);
+    return holidayDates(year).includes(formattedDate);
 }
 
 /**

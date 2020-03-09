@@ -154,4 +154,16 @@ function holidays(year)
     return $.merge(public, religious);
 }
 
+/**
+ * Determine if the given date is not the weekend day.
+ *
+ * @param  Javascript\Date  date
+ * @return boolean
+ */
+function isNotWeekend(date)
+{
+    return date.getDay() !== 6 && date.getDay() !== 0;
+}
+
+
 </script>

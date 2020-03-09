@@ -21,13 +21,13 @@ function highlightDoctorAbsences(fcDay, doctorAbsences, className="absence")
 }
 
 /**
- * Determine if the doctor is not absente on the given date.
+ * Determine if the doctor is absente on the given date.
  *
  * @param  Javascrpt\date  date
  * @param  array  absencesDates
  * @return boolean
  */
-function isNotDoctorAbsenceDate(date, doctorAbsences)
+function isDoctorAbsenceDate(date, doctorAbsences)
 {
     var formattedDate = formatDateObj(date, 'YYYY-MM-DD');
     var absencesDates = [];
@@ -36,5 +36,5 @@ function isNotDoctorAbsenceDate(date, doctorAbsences)
         absencesDates.push(doctorAbsences[i].dates);
     }
 
-    return ! absencesDates.flat().includes(formattedDate);
+    return absencesDates.flat().includes(formattedDate);
 }
