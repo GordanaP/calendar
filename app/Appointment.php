@@ -16,6 +16,31 @@ class Appointment extends Model
         'start_at', 'patient_id'
     ];
 
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = ['start_at'];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['end_at'];
+
+    /**
+     * Get the appointment end time.
+     *
+     * @return string
+     */
+    public function getEndAtAttribute()
+    {
+        return $this->start_at->addMinutes(15)->toDateTimeString();
+    }
+
     /**
      * The appointment's doctor.
      */
