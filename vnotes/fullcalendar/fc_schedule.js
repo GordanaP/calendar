@@ -1,4 +1,3 @@
-
 /**
  * Determine if the given date is the doctor's office day.
  *

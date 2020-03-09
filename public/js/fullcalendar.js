@@ -61,4 +61,3 @@ function isPast(dateTime)
 
     return d2.diff(d1, 'minutes') > 0;
 }
-

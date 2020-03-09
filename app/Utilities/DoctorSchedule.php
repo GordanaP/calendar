@@ -41,6 +41,24 @@ class DoctorSchedule extends AppCarbon
     }
 
     /**
+     * Tha doctor's last scheduled time slot on a given day.
+     *
+     * @param  \App\Doctor  $doctor
+     * @param  string  $date
+     * @param  integer $interval
+     */
+    public function lastSchedulingTimeSlot($date): string
+    {
+        $office_day_end_at = $this->officeDayEndHour($date);
+        $app_slot = $this->doctor->app_slot;
+
+        return $office_day_end_at
+            ? $this->parse($office_day_end_at)
+                ->subMinutes($app_slot)
+                ->format('H:i') : '';
+    }
+
+    /**
      * The doctor's scheduling time slots for the given day.
      *
      * @param  string $date
@@ -75,24 +93,6 @@ class DoctorSchedule extends AppCarbon
     }
 
     /**
-     * Tha doctor's last scheduled time slot on a given day.
-     *
-     * @param  \App\Doctor  $doctor
-     * @param  string  $date
-     * @param  integer $interval
-     */
-    public function lastSchedulingTimeSlot($date): string
-    {
-        $office_day_end_at = $this->officeDayEndHour($date);
-        $app_slot = $this->doctor->app_slot;
-
-        return $office_day_end_at
-            ? $this->parse($office_day_end_at)
-                ->subMinutes($app_slot)
-                ->format('H:i') : '';
-    }
-
-    /**
      * The doctor's office day end hour.
      *
      * @param  string $date
@@ -114,6 +114,20 @@ class DoctorSchedule extends AppCarbon
         $office_day = $this->findOfficeDay($date);
 
         return $office_day ? $office_day->hour->start_at : '';
+    }
+
+    /**
+     * The doctor's office hours.
+     */
+    public function officeHours(): Collection
+    {
+        return $this->doctor->business_days->map(function($day) {
+            return collect([
+                'daysOfWeek'=> [$day->iso],
+                'startTime' => $day->hour->start_at,
+                'endTime' => $day->hour->end_at,
+            ]);
+        });
     }
 
     /**

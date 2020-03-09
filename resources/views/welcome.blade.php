@@ -25,6 +25,7 @@
         </div>
     </div>
 
+    @include('partials.appointments._schedule_modal')
 @endsection
 
 @section('scripts')
@@ -44,6 +45,10 @@
             var slotDuration = formatDateString(doctorSchedulingTimeSlot, 'mm', 'HH:mm:ss');
             var doctorAbsences = @json(App::make('doctor-absences')->setDoctor($doctor)->all());
             var doctorAppListUrl = @json(route('doctors.appointments.list', $doctor));
+            var doctorOfficeHours = @json(App::make('doctor-schedule')->setDoctor($doctor)->officeHours());
+
+            var appModal = $('#scheduleAppModal');
+
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
@@ -57,7 +62,7 @@
                 firstDay: firstWeekDay,
                 minTime: earliestBusinessOpen,
                 maxTime: latestBusinessClose,
-                businessHours: doctorOfficeHours(doctorOfficeDays),
+                businessHours: doctorOfficeHours,
                 slotDuration: slotDuration,
                 slotLabelFormat: [
                     {
@@ -76,7 +81,7 @@
                 },
                 selectConstraint: 'businessHours',
                 select: function(selectInfo) {
-                    // open the schedule appointment modal
+                    appModal.open()
                 },
                 events:  {
                     url: doctorAppListUrl,
