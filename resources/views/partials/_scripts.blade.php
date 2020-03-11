@@ -1,18 +1,5 @@
-<script>
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        statusCode: {
-            401: function() {
-                redirectTo("{{ route('login') }}")
-            },
-            403: function() {
-                alert('The action is unauthorized');
-            }
-        }
-    });
-</script>
+<!-- Scripts -->
+<script src="{{ asset('js/app.js') }}"></script>
 
 <!-- Moment -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
@@ -41,3 +28,19 @@
 <script src="{{ asset('js/modal_helpers.js') }}"></script>
 
 @yield('scripts')
+
+<script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        statusCode: {
+            401: function() {
+                redirectTo("{{ route('login') }}")
+            },
+            403: function() {
+                alert('The action is unauthorized');
+            }
+        }
+    });
+</script>

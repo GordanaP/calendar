@@ -67,4 +67,19 @@ class Doctor extends Model
     {
         return $this->hasMany(Appointment::class);
     }
+
+    /**
+     * Schedule an appointment.
+     *
+     * @param  \App\Patient $patient
+     * @param  string $date
+     * @return \App\Appointment $appointment
+     */
+    public function scheduleAppointment($patient, $date)
+    {
+        return $this->appointments()->create([
+            'patient_id' => $patient->id,
+            'start_at' => $date,
+        ]);
+    }
 }
