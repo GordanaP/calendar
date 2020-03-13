@@ -22,7 +22,11 @@ class Appointment extends Model
      *
      * @var array
      */
-    protected $dates = ['start_at'];
+    // protected $dates = ['start_at'];
+    //
+    protected $casts = [
+        'start_at' => 'datetime'
+    ];
 
     /**
      * The accessors to append to the model's array form.

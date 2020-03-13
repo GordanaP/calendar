@@ -4,6 +4,7 @@ namespace App\Utilities;
 
 use App\BusinessDay;
 use App\Utilities\AppCarbon;
+use Illuminate\Support\Facades\App;
 
 class BusinessSchedule extends AppCarbon
 {
@@ -69,5 +70,16 @@ class BusinessSchedule extends AppCarbon
     public function isBusinessHour($time, $date) : bool
     {
         return $this->inTimeRange($time, $this->openingTime($date), $this->lastAppStart($date));
+    }
+
+    /**
+     * Determine if the date is a business work day.
+     *
+     * @param  string  $date
+     */
+    public function isBusinessDay($date) : bool
+    {
+       return ! $this->parse($date)->isSunday() &&
+       ! App::make('holidays')->isHoliday($date);
     }
 }

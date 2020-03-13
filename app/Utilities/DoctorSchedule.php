@@ -29,12 +29,28 @@ class DoctorSchedule extends AppCarbon
     }
 
     /**
+     * Determine if the doctor's scheduling time slot is free on a given day.
+     *
+     * @param  string  $time
+     * @param  string  $date
+     */
+    public function isNotBookedTimeSlot($slot, $date): ?bool
+    {
+        $date_time_string = $date .' '.$slot;
+        $app_time = $this->fromFormat($date_time_string);
+
+        return $this->isSchedulingTimeSlot($slot, $date)
+            ? $this->doctor->appointments->where('start_at', $app_time)->isEmpty()
+            : null;
+    }
+
+    /**
      * Determine if the time slot is within the doctor's scheduling time slots.
      *
      * @param  string  $slot
      * @param  string  $date
      */
-    public function isSchedulingTimeSlot($slot, $date): bool
+    public function isSchedulingTimeSlot($slot, $date): ?bool
     {
         return $this->isOfficeDay($date)
             ? $this->schedulingTimeSlots($date)->contains($slot) : null;
@@ -52,7 +68,7 @@ class DoctorSchedule extends AppCarbon
         $office_day_end_at = $this->officeDayEndHour($date);
         $app_slot = $this->doctor->app_slot;
 
-        return $office_day_end_at
+        return isset($office_day_end_at) && isset($app_slot)
             ? $this->parse($office_day_end_at)
                 ->subMinutes($app_slot)
                 ->format('H:i') : '';
@@ -137,10 +153,12 @@ class DoctorSchedule extends AppCarbon
      */
     public function isValidOfficeDay($date): bool
     {
-        return $this->isValideDate($date) &&
-            App::make('business-schedule')->isBusinessDay($date) &&
+        return $this->isValidDate($date) &&
             $this->isEqualOrAfterToday($date) &&
-            $this->isOfficeDay($date);
+            App::make('business-schedule')->isBusinessDay($date) &&
+            $this->isOfficeDay($date) &&
+            ! App::make('doctor-absences')->setDoctor($this->doctor)
+                ->isAbsenceDay($date);
     }
 
     /**
@@ -156,7 +174,6 @@ class DoctorSchedule extends AppCarbon
             return $day->iso;
         })->contains($date_iso);
     }
-
 
     /**
      * Find the doctor's specific office day.

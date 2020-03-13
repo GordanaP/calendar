@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Doctor;
 
 use App\Doctor;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AppointmentRequest;
 use Illuminate\Http\Request;
 
 class DoctorAppointmentController extends Controller
@@ -34,7 +35,7 @@ class DoctorAppointmentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Doctor $doctor)
+    public function store(AppointmentRequest $request, Doctor $doctor)
     {
         $date = request('app_date').' '. request('app_time');
         $patient = \App\Patient::find($request->patient_id);

@@ -9,8 +9,8 @@
 
 @section('content')
     @php
-        $doctor = App\Doctor::first();
         $patient = App\Patient::first();
+        $doctor = App\Doctor::first();
     @endphp
 
     <div class="row">
@@ -38,6 +38,11 @@
         var appTime = $('#appTime');
         var appButton = $('.app-button');
         var deleteAppButton = $('#deleteAppButton');
+        var errors = ['app_date', 'app_time'];
+
+        appModal.autofocus('#appDate');
+        appModal.clearContentOnClose(errors);
+        clearErrorOnTriggeringAnEvent();
 
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
@@ -183,8 +188,8 @@
                     appModal.close();
                 })
                 .fail(function(response) {
-                    console.log("error");
-                    // error
+                    var errors = response.responseJSON.errors;
+                    displayErrors(errors);
                 });
             });
 

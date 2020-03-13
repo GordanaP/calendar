@@ -8,7 +8,7 @@
             </option>
         </select>
 
-        <span class="invalid-feedback patient"></span>
+        <span class="invalid-feedback patient_id"></span>
     </div>
 
     <!-- The doctor -->

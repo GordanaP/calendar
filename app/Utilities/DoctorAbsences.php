@@ -29,11 +29,13 @@ class DoctorAbsences extends AppCarbon
     }
 
     /**
-     * All absences dates;
+     * Determine if the given date is the doctor's absence day.
+     *
+     * @param  string  $date
      */
-    public function allDates(): Collection
+    public function isAbsenceDay($date): bool
     {
-        return $this->all()->pluck('dates')->flatten();
+        return $this->all()->pluck('dates')->flatten()->contains($date);
     }
 
     /**
