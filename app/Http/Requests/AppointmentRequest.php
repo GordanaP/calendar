@@ -2,13 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\IsNotPast;
 use App\Rules\IsAfterNow;
 use App\Rules\IsValidDate;
-use App\Rules\IsValidTime;
 use Illuminate\Support\Arr;
 use App\Rules\IsBusinessDay;
-use App\Utilities\AppCarbon;
 use App\Rules\IsDoctorOfficeDay;
 use App\Rules\IsDoctorOfficeHour;
 use Illuminate\Support\Facades\App;
@@ -37,6 +34,7 @@ class AppointmentRequest extends FormRequest
     public function rules()
     {
         $rules = [
+            'patient_id' => 'sometimes|exists:patients,id',
             'app_date' => [
                 'required',
                 new isValidDate,
@@ -52,7 +50,7 @@ class AppointmentRequest extends FormRequest
         ];
 
         if ( App::make('doctor-schedule')->setDoctor(\App\Doctor::first())
-                ->isValidOfficeDay($this->app_date))
+            ->isValidOfficeDay($this->app_date))
         {
             return $this->addToRules($rules, 'app_time', $this->appTimeRules());
         }

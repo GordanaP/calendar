@@ -14,6 +14,12 @@
 <link href="{{ asset('vendor/fullcalendar-4.3.1/packages/timegrid/main.css') }}" rel='stylesheet' />
 <link href="{{ asset('vendor/fullcalendar-4.3.1/packages/list/main.css') }}" rel='stylesheet' />
 
+<!-- Datepicker -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" integrity="sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik=" crossorigin="anonymous" />
+
+<!-- Timepicker -->
+<link rel="stylesheet" href="{{ asset('vendor/jonthornton-jquery-timepicker/jquery.timepicker.css') }}">
+
 @yield('links')
 
 <!-- App styles -->

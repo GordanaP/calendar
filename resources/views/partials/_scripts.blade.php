@@ -20,11 +20,18 @@
 <script src="{{ asset('vendor/fullcalendar-4.3.1/packages/timegrid/main.js') }}"></script>
 <script src="{{ asset('vendor/fullcalendar-4.3.1/packages/list/main.js') }}"></script>
 
+<!-- Datepicker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+<!-- Timepicker -->
+<script src="{{ asset('vendor/jonthornton-jquery-timepicker/jquery.timepicker.js') }}"></script>
+
 <!-- Custom -->
 <script src="{{ asset('js/fullcalendar.js') }}"></script>
 <script src="{{ asset('js/fc_absences.js') }}"></script>
 <script src="{{ asset('js/fc_holidays.js') }}"></script>
 <script src="{{ asset('js/fc_event.js') }}"></script>
+<script src="{{ asset('js/fc_datepicker.js') }}"></script>
 <script src="{{ asset('js/modal_helpers.js') }}"></script>
 <script src="{{ asset('js/form_helpers.js') }}"></script>
 

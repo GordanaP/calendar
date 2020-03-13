@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Appointment;
 
 use App\Appointment;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\AppointmentRequest;
 
 class AppointmentController extends Controller
 {
@@ -68,14 +69,16 @@ class AppointmentController extends Controller
      * @param  \App\Appointment  $appointment
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Appointment $appointment)
+    public function update(AppointmentRequest $request, Appointment $appointment)
     {
-        $appointment->start_at = request('app_date').' '. request('app_time');
-        $appointment->save();
+        if(! $appointment->start_at->isPast()) {
+            $appointment->start_at = request('app_date').' '. request('app_time');
+            $appointment->save();
+        }
 
         return response([
             'appointment' => $appointment->load('doctor', 'patient'),
-            'message' => 'Updated!',
+            'message' => $appointment->wasChanged('start_at') ? 'Updated!' : 'Past appointment',
         ]);
     }
 
@@ -87,8 +90,6 @@ class AppointmentController extends Controller
      */
     public function destroy(Appointment $appointment)
     {
-        $appointment->delete();
-
         $appointment->delete();
 
         return response([

@@ -2,8 +2,8 @@
 
 @section('links')
     <style type="text/css">
-        .holiday { background-color: coral; }
-        .absence { background-color: green; }
+        .holiday, .holiday span.ui-state-default { background-color: coral; }
+        .absence, .absence span.ui-state-default { background-color: lightgreen; }
     </style>
 @endsection
 
@@ -11,6 +11,8 @@
     @php
         $patient = App\Patient::first();
         $doctor = App\Doctor::first();
+
+        echo $app = App\Appointment::find(13)->start_at->isPast();
     @endphp
 
     <div class="row">
@@ -38,9 +40,14 @@
         var appTime = $('#appTime');
         var appButton = $('.app-button');
         var deleteAppButton = $('#deleteAppButton');
-        var errors = ['app_date', 'app_time'];
+        var errors = ['patient_id', 'app_date', 'app_time'];
+        var doctorOfficeDays = @json($doctor->business_days);
+        var doctorOfficeHours = @json(App::make('doctor-schedule')->setDoctor($doctor)->officeHours());
+        var doctorSchedulingTimeSlot = @json($doctor->app_slot);
+        var slotDuration = formatDateString(doctorSchedulingTimeSlot, 'mm', 'HH:mm:ss');
+        var doctorAbsences = @json(App::make('doctor-absences')->setDoctor($doctor)->all());
+        var doctorAppListUrl = @json(route('doctors.appointments.list', $doctor));
 
-        appModal.autofocus('#appDate');
         appModal.clearContentOnClose(errors);
         clearErrorOnTriggeringAnEvent();
 
@@ -53,12 +60,6 @@
             var eventLimit = 6;
             var earliestBusinessOpen = @json(App::make('business-schedule')->theEarliestOpen());
             var latestBusinessClose = @json(App::make('business-schedule')->theLatestClose());
-            var doctorOfficeDays = @json($doctor->business_days);
-            var doctorOfficeHours = @json(App::make('doctor-schedule')->setDoctor($doctor)->officeHours());
-            var doctorSchedulingTimeSlot = @json($doctor->app_slot);
-            var slotDuration = formatDateString(doctorSchedulingTimeSlot, 'mm', 'HH:mm:ss');
-            var doctorAbsences = @json(App::make('doctor-absences')->setDoctor($doctor)->all());
-            var doctorAppListUrl = @json(route('doctors.appointments.list', $doctor));
 
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -207,9 +208,11 @@
                 .done(function(response) {
                     updateEvent(calendar, response.appointment);
                     appModal.close();
+                    console.log(response.message)
                 })
-                .fail(function() {
-                    console.log("error");
+                .fail(function(response) {
+                    var errors = response.responseJSON.errors;
+                    displayErrors(errors);
                 });
             });
 
@@ -230,6 +233,18 @@
                     console.log("error");
                 });
             });
+        });
+
+        appDate.datepicker({
+            firstDay: 1,
+            dateFormat: "yy-mm-dd",
+            minDate: 0,
+            changeMonth: true,
+            changeYear: true,
+            beforeShowDay: function(date)
+            {
+                return highlightDoctorNonWorkingDates(date, doctorAbsences)
+            }
         });
 
     </script>
