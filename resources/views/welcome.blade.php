@@ -3,7 +3,8 @@
 @section('links')
     <style type="text/css">
         .holiday, .holiday span.ui-state-default { background-color: coral; }
-        .absence, .absence span.ui-state-default { background-color: lightgreen; }
+        .absence, .absence span.ui-state-default { background-color: yellow; }
+        .office-day a.ui-state-default {background-color: lightgreen}
     </style>
 @endsection
 
@@ -11,8 +12,6 @@
     @php
         $patient = App\Patient::first();
         $doctor = App\Doctor::first();
-
-        echo $app = App\Appointment::find(13)->start_at->isPast();
     @endphp
 
     <div class="row">
@@ -41,12 +40,7 @@
         var appButton = $('.app-button');
         var deleteAppButton = $('#deleteAppButton');
         var errors = ['patient_id', 'app_date', 'app_time'];
-        var doctorOfficeDays = @json($doctor->business_days);
-        var doctorOfficeHours = @json(App::make('doctor-schedule')->setDoctor($doctor)->officeHours());
-        var doctorSchedulingTimeSlot = @json($doctor->app_slot);
-        var slotDuration = formatDateString(doctorSchedulingTimeSlot, 'mm', 'HH:mm:ss');
-        var doctorAbsences = @json(App::make('doctor-absences')->setDoctor($doctor)->all());
-        var doctorAppListUrl = @json(route('doctors.appointments.list', $doctor));
+
 
         appModal.clearContentOnClose(errors);
         clearErrorOnTriggeringAnEvent();
@@ -60,7 +54,13 @@
             var eventLimit = 6;
             var earliestBusinessOpen = @json(App::make('business-schedule')->theEarliestOpen());
             var latestBusinessClose = @json(App::make('business-schedule')->theLatestClose());
-
+            var doctorOfficeDays = @json($doctor->business_days);
+            var doctorOfficeHours = @json(App::make('doctor-schedule')->setDoctor($doctor)->officeHours());
+            var doctorSchedulingTimeSlot = @json($doctor->app_slot);
+            var slotDuration = formatDateString(doctorSchedulingTimeSlot, 'mm', 'HH:mm:ss');
+            var doctorAbsences = @json(App::make('doctor-absences')->setDoctor($doctor)->all());
+            var doctorAppListUrl = @json(route('doctors.appointments.list', $doctor));
+            var doctorSchedulingSlotsUrl = @json(route('doctors.scheduling.time.slots', $doctor));
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: [ 'interaction', 'dayGrid', 'timeGrid', 'list' ],
@@ -102,6 +102,27 @@
                     appTime.val(eventTime);
                     appButton.text('Schedule').attr('id', 'scheduleAppButton');
                     deleteAppButton.hide();
+
+                    $.ajax({
+                        url: doctorSchedulingSlotsUrl,
+                        type: 'POST',
+                        data: {
+                            app_date: eventDate
+                        },
+                    })
+                    .done(function(response) {
+                        var minTime = response.minTime;
+                        var maxTime = response.maxTime;
+                        var bookedSlots = response.bookedSlots;
+
+                        appTime.timepicker({
+                            'timeFormat': 'H:i',
+                            'step': doctorSchedulingTimeSlot,
+                            'minTime': minTime,
+                            'maxTime': maxTime,
+                            'disableTimeRanges': bookedSlots,
+                        });
+                    });
                 },
                 events:  {
                     url: doctorAppListUrl,
@@ -233,19 +254,45 @@
                     console.log("error");
                 });
             });
+
+            appDate.datepicker({
+                onSelect: function(date) {
+
+                    appTime.timepicker('remove');
+                    appTime.val('')
+
+                    $.ajax({
+                        url: doctorSchedulingSlotsUrl,
+                        type: 'POST',
+                        data: {
+                            app_date: date
+                        },
+                    })
+                    .done(function(response) {
+                        var minTime = response.minTime;
+                        var maxTime = response.maxTime;
+                        var bookedSlots = response.bookedSlots;
+
+                        appTime.timepicker({
+                            'timeFormat': 'H:i',
+                            'step': doctorSchedulingTimeSlot,
+                            'minTime': minTime,
+                            'maxTime': maxTime,
+                            'disableTimeRanges': bookedSlots,
+                        });
+                    });
+                },
+                firstDay: 1,
+                dateFormat: "yy-mm-dd",
+                minDate: 0,
+                changeMonth: true,
+                changeYear: true,
+                beforeShowDay: function(date) {
+                    return markDoctorOfficeDays(date, doctorOfficeDays, doctorAbsences)
+                }
+            });
         });
 
-        appDate.datepicker({
-            firstDay: 1,
-            dateFormat: "yy-mm-dd",
-            minDate: 0,
-            changeMonth: true,
-            changeYear: true,
-            beforeShowDay: function(date)
-            {
-                return highlightDoctorNonWorkingDates(date, doctorAbsences)
-            }
-        });
 
     </script>
 @endsection

@@ -1,8 +1,9 @@
 /**
- * Highlight doctor absences.
+ * Highlight the doctor's absences.
  *
- * @param  FullCalendar\Object
+ * @param  FullCalendar\Object fcDay
  * @param  array doctorAbsences
+ * @param  string className
  */
 function highlightDoctorAbsences(fcDay, doctorAbsences, className="absence")
 {
@@ -37,4 +38,20 @@ function isDoctorAbsenceDate(date, doctorAbsences)
     }
 
     return absencesDates.flat().includes(formattedDate);
+}
+
+/**
+ * Determine if the given date is the doctor's office day.
+ *
+ * @param  Javascript\Date  date
+ * @param  array  doctorOfficeDays
+ * @return boolean
+ */
+function isDoctorOfficeDay(date, doctorOfficeDays)
+{
+    var day = date.getDay();
+
+    return doctorOfficeDays.map(function(day) {
+        return day.iso;
+    }).includes(day);
 }

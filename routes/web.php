@@ -10,6 +10,9 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
+Route::post('doctors/{doctor}/scheduling-time-slots', 'Doctor\DoctorAjaxController@store')
+    ->name('doctors.scheduling.time.slots');
+
 /**
  * Doctor Appointment
  */

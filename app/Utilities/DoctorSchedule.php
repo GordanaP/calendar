@@ -75,6 +75,35 @@ class DoctorSchedule extends AppCarbon
     }
 
     /**
+     * The disabled time range on the timepicker.
+     *
+     * @param  string $date
+     */
+    function timepickerDisableTimeRanges($date): Collection
+    {
+        return $this->bookedTimeSlots($date)->map(function($slot){
+            return [
+                $slot, $this->parse($slot)->addMinutes($this->doctor->app_slot)->format('H:i')
+            ];
+        });
+    }
+
+    /**
+     * The doctor's free scheduling time slots on the given date.
+     *
+     * @param  string $date
+     */
+    public function bookedTimeSlots($date): Collection
+    {
+        return $this->schedulingTimeSlots($date)->filter(function ($slot) use($date) {
+                $date_time_string = $date .' '. $slot;
+                $app_time = $this->fromFormat($date_time_string);
+
+                return $this->doctor->appointments->where('start_at', $app_time)->all();
+        })->flatten();
+    }
+
+    /**
      * The doctor's scheduling time slots for the given day.
      *
      * @param  string $date
